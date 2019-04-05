@@ -64,19 +64,31 @@ class Node():
 
 mv_list = []
 
+def h(grid,solved):
+    result = 0
+    for y, v in enumerate(grid):
+        for x, value in enumerate(v):
+            if grid[y][x] != solved[y][x] and value == 0:
+                result += 1
+    return result
+
+def g(grid)
 
 def solve(data, solved):
+    Node start = data.
     open_set = [data]
     closed_set = []
     heapify(open_set)
     heapify(closed_set)
-  #  while open_set:
-      #  current = heappop(open_set)
-      #  heappush(closed_set, current)
-      #  for child in getChild(current):
-      #  if current == solved:
-      #      return
-        
+    while open_set:
+        current = heappop(open_set)
+        heappush(closed_set, current)
+        if current == solved:
+      #     return
+        for child in getChild(current):
+            curr_s = Node(child)
+            if curr_s in closed_set:
+                
 #        if (curr == solved):
 #            reconstruct_path
     
