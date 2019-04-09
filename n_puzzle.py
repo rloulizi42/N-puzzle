@@ -93,32 +93,28 @@ def solve(data, solved):
     start = Node(None, data)
     open_set = []
     closed_set = []
+    closedMap_set = set(closed_set)
+    openMap_set = set(open_set)
     heappush(open_set, start)
     while open_set:
-        push = True
         current = heappop(open_set)
         closed_set.insert(0, current)
+        closedMap_set.add(current)
         if current.grid == solved:
             path = reconstruct_path(current)
             path.insert(0,data)
             return path
         for child in getChild(current.grid):
             child_node = Node(current, child)
-            if child_node in closed_set:
+            if child_node in closedMap_set:
                 continue
             child_node.g = current.g + 1
             child_node.h = h(child, solved)
             child_node.f = child_node.g + child_node.h
-            for open_node in open_set:
-                if child == open_node.grid:
-                    push = False
-                    if child_node.f < open_node.f:
-                        open_node.g = child_node.g
-                        open_node.h = child_node.h
-                        open_node.f = child_node.f
-                        open_node.parent = child_node.parent
-            if push:
-                heappush(open_set, child_node)
+            if child_node in openMap_set and child_node.f < open_node.f:
+                continue
+            heappush(open_set, child_node)
+            openMap_set.add(child_node)
     print('No Solution')
                 
 solved = [[1, 2, 3],
