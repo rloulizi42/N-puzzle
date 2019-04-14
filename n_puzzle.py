@@ -6,7 +6,18 @@ with open(sys.argv[1]) as f:
     data = f.readlines()
 data = [x.strip() for x in data]
 n = data[1]
-data = [list(x.replace(" ", "")) for x in data[2:]]
+data = [list(x.split(" ")) for x in data[2:]]
+
+new_data = []
+
+for lignes in data:
+    l = []
+    for x in lignes:
+        if x.isdigit():
+            l.append(x)
+    new_data.append(l)
+
+data = new_data
 data = [list(map(int, x)) for x in data]
 
 DOWN = (-1, 0)
@@ -14,9 +25,11 @@ UP = (1, 0)
 LEFT = (0, 1)
 RIGHT = (0, -1)
 
-solved = [[1, 2, 3],
-          [8, 0, 4],
-          [7, 6, 5]]
+solved = [[1, 2, 3, 4, 5],
+          [16, 17, 18, 19, 6],
+          [15, 24, 0, 20, 7],
+          [14, 23, 22, 21, 8],
+          [13, 12, 11, 10, 9]]
 
 flat_solved = [n for lists in solved for n in lists]
 dictOfGrid = {flat_solved[i] : i for i in range(0,len(flat_solved))}
@@ -133,9 +146,8 @@ def solve(data, solved):
             openMap_set.update({child_node.__hash__:child_node})
     print('No Solution')
                 
-data1 =  [[1, 2, 3],
-          [7, 8, 4],
-          [0, 6, 5]]
+puzzle = solve(data, solved)
 
-
-c = solve(data, solved)
+for n in puzzle:
+    printer(n)
+    print('\n')
