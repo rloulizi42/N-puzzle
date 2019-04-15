@@ -138,12 +138,20 @@ class Node():
         else:
             return False
 
-def h(grid,solved):
+def manhattan(grid,solved):
     result = 0
     for y, v in enumerate(grid):
         for x, value in enumerate(v):
             if grid[y][x] != solved[y][x] and value != 0:
                 result += abs(y - dictOfGrid[value] // n) + abs(x - dictOfGrid[value] % n)
+    return result
+
+def h2(grid, solved):
+    result = 0
+    for y, v in enumerate(grid):
+        for x, value in enumerate(v):
+            if grid[y][x] != solved[y][x] and value != 0:
+                result += 1 
     return result
 
 def reconstruct_path(node):
@@ -176,7 +184,7 @@ def solve(data, solved):
                 continue
     
             child_node.g = current.g + 1
-            child_node.h = h(child, solved)
+            child_node.h = manhattan(child, solved)
             child_node.f = child_node.g + child_node.h
 
             if child_node in openMap_set.values():
@@ -295,10 +303,6 @@ def create_solved(N):
     return puzzle
 
 p = create_solved(int(N))
-
-
-
-
 
 res = is_solvable(int(N), data, dictOfGrid)
 print(res)
