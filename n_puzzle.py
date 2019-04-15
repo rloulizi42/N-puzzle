@@ -184,32 +184,78 @@ def is_solvable(N, data, dictOfGrid):
     sorted_data = collections.OrderedDict(sorted(data_grid.items()))
 
     inversion = 0
-    print(sorted_data)
-    print(sorted_solved)
     for i, _ in enumerate(sorted_data):
         inversion += abs(sorted_solved[i][0] - sorted_data[i][0]) + abs(sorted_solved[i][1] - sorted_data[i][1])
     
-    print(inversion)
-
     if N % 2 != 0:
         if inversion % 2 == 0:
             return True
     else:
-        blank_row_pos = abs(sorted_solved[0][0] - sorted_data[0][0])
-        print(blank_row_pos)
-        if blank_row_pos == 0:
-            return True
+        blank_row_pos = abs(sorted_solved[0][0] - sorted_data[0][0]) + 1
         if blank_row_pos % 2 == 0 and inversion % 2 != 0:
             return True
-        if blank_row_pos % 2 != 0 and inversion % 2 == 0:
+        if blank_row_pos% 2 != 0 and inversion % 2 == 0:
             return True
     return False    
 
 
 #d = solve(data, solved)
 
-inversion = is_solvable(int(N), data, dictOfGrid)
-printer(solved)
-print('\n')
-printer(data)
-print(inversion)
+def create_solved(N):
+    it = 1
+    number = N * N 
+    x = 0 
+    y = 0
+    hg = hd = bg = bd = 0
+    puzzle = []
+    for i in range(0, N):
+        puzzle.append([])
+        for j in range(0, N):
+            puzzle[i].append(0)
+    while it < number:
+        while x + hd < N and it < number:
+            puzzle[y][x] = it
+            x += 1 
+            it += 1
+        hg += 1
+        x -= 1
+        y += 1
+        while y + bd < N and it < number:
+            puzzle[y][x] = it
+            y += 1
+            it += 1
+        hd += 1
+        y -= 1
+        x -= 1
+        while x - bg >= 0 and it < number:
+            puzzle[y][x] = it
+            x -= 1
+            it += 1
+        bd += 1
+        x += 1
+        y -= 1
+        while y - bd >= 0 and it < number:
+            puzzle[y][x] = it
+            y -= 1
+            it += 1
+        bg += 1
+        y += 1
+        x += 1
+
+    return puzzle
+
+print(N)
+p = create_solved(int(N))
+printer(p)
+
+
+        
+
+
+
+
+#inversion = is_solvable(int(N), data, dictOfGrid)
+#printer(solved)
+#print('\n')
+#printer(data)
+#print(inversion)
