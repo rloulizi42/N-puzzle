@@ -25,10 +25,50 @@ UP = (1, 0)
 LEFT = (0, 1)
 RIGHT = (0, -1)
 
-solved = [[1, 2, 3, 4],
-          [12, 13, 14, 5],
-          [11, 0, 15, 6],
-          [10,9, 8, 7]]
+def create_solved(N):
+    it = 1
+    number = N * N 
+    x = 0 
+    y = 0
+    hg = hd = bg = bd = 0
+    puzzle = []
+    for i in range(0, N):
+        puzzle.append([])
+        for j in range(0, N):
+            puzzle[i].append(0)
+    while it < number:
+        while x + hd < N and it < number:
+            puzzle[y][x] = it
+            x += 1 
+            it += 1
+        hg += 1
+        x -= 1
+        y += 1
+        while y + bd < N and it < number:
+            puzzle[y][x] = it
+            y += 1
+            it += 1
+        hd += 1
+        y -= 1
+        x -= 1
+        while x - bg >= 0 and it < number:
+            puzzle[y][x] = it
+            x -= 1
+            it += 1
+        bd += 1
+        x += 1
+        y -= 1
+        while y - bd >= 0 and it < number:
+            puzzle[y][x] = it
+            y -= 1
+            it += 1
+        bg += 1
+        y += 1
+        x += 1
+
+    return puzzle
+
+solved = create_solved(int(N))
 
 flat_solved = [n for lists in solved for n in lists]
 dictOfGrid = {flat_solved[i] : i for i in range(0,len(flat_solved))}
@@ -172,21 +212,31 @@ import collections
 def is_solvable(N, data, dictOfGrid):
     solved_grid = {}
     data_grid = {}
+    data_grid2 = {}
  
     for k, v in dictOfGrid.items():
         solved_grid.update({k: (v // N, v % N)})
     flat_data = [n for lists in data for n in lists]
-    dictOfGridData = {flat_data[i] : i for i in range(0,len(flat_data))}
+    dictOfGridData = {flat_data[i] : dictOfGrid[flat_data[i]] for i in range(0,len(flat_data))}
+    dictOfGridData2 = {flat_data[i] : i for i in range(0,len(flat_data))}
+    for k, v in dictOfGridData2.items():
+        data_grid2.update({k: (v // N, v % N)})
+    
     for k, v in dictOfGridData.items():
-        data_grid.update({k: (v // N, v % N)})
+       data_grid.update({k: (v // N, v % N)})
     
     sorted_solved = collections.OrderedDict(sorted(solved_grid.items()))
-    sorted_data = collections.OrderedDict(sorted(data_grid.items()))
+    sorted_data = collections.OrderedDict(sorted(data_grid2.items()))
 
     inversion = 0
-    for i, _ in enumerate(sorted_data):
-        inversion += abs(sorted_solved[i][0] - sorted_data[i][0]) + abs(sorted_solved[i][1] - sorted_data[i][1])
-    
+    pos = 0
+    for k in dictOfGridData.keys():
+        if k != 0:
+            for i in range(pos + 1, len(dictOfGridData)):
+                if flat_data[i] != 0:
+                    if dictOfGridData[k] > dictOfGridData[flat_data[i]]:
+                        inversion += 1 
+            pos += 1
     if N % 2 != 0:
         if inversion % 2 == 0:
             return True
@@ -244,18 +294,13 @@ def create_solved(N):
 
     return puzzle
 
-print(N)
 p = create_solved(int(N))
-printer(p)
-
-
-        
 
 
 
 
-#inversion = is_solvable(int(N), data, dictOfGrid)
-#printer(solved)
-#print('\n')
+
+res = is_solvable(int(N), data, dictOfGrid)
+print(res)
 #printer(data)
 #print(inversion)
