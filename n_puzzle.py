@@ -5,7 +5,7 @@ import math
 with open(sys.argv[1]) as f:
     data = f.readlines()
 data = [x.strip() for x in data]
-N = data[1]
+N = int(data[1])
 data = [list(x.split(" ")) for x in data[2:]]
 
 new_data = []
@@ -72,6 +72,10 @@ solved = create_solved(int(N))
 
 flat_solved = [n for lists in solved for n in lists]
 dictOfGrid = {flat_solved[i] : i for i in range(0,len(flat_solved))}
+
+flat_data = [n for lists in data for n in lists]
+dictOfGridData = {flat_data[i] : i for i in range(0,len(flat_data))}
+
 n = math.sqrt(len(flat_solved))
 
 def printer(grid):
@@ -146,7 +150,7 @@ def manhattan(grid,solved):
                 result += abs(y - dictOfGrid[value] // n) + abs(x - dictOfGrid[value] % n)
     return result
 
-def h2(grid, solved):
+def out_of_place(grid, solved):
     result = 0
     for y, v in enumerate(grid):
         for x, value in enumerate(v):
@@ -154,12 +158,28 @@ def h2(grid, solved):
                 result += 1 
     return result
 
+def linear_conflict(dictOfGrid, dictOfGridData):
+    solved_grid = {}
+    data_grid = {}
+
+    for k, v in dictOfGridData.items():
+        data_grid.update({k: (v // N, v % N)})
+    
+    for k, v in dictOfGrid.items():
+       solved_grid.update({k: (v // N, v % N)})
+    
+    print(solved_grid)
+    print(data_grid)
+
 def reconstruct_path(node):
     res = []
     while node.parent != None:
         res.insert(0, node.grid)
         node = node.parent
     return res
+
+def h(child, solved):
+    return manhattan(child, solved) + out_of_place(child, solved)
 
 def solve(data, solved):
     start = Node(None, data)
@@ -184,7 +204,7 @@ def solve(data, solved):
                 continue
     
             child_node.g = current.g + 1
-            child_node.h = manhattan(child, solved)
+            child_node.h = h(child, solved)
             child_node.f = child_node.g + child_node.h
 
             if child_node in openMap_set.values():
@@ -302,9 +322,12 @@ def create_solved(N):
 
     return puzzle
 
-p = create_solved(int(N))
+#so = create_solved(int(N))
+#print(so)
+#p = solve(data,so)
 
-res = is_solvable(int(N), data, dictOfGrid)
-print(res)
-#printer(data)
-#print(inversion)
+printer(data)
+print('\n')
+printer(solved)
+
+linear_conflict(dictOfGrid, dictOfGridData)
