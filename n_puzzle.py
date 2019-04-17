@@ -196,19 +196,22 @@ def linear_conflict(grid, solved):
                 if r_grid[y][x] == r_solved[y][x + 1] or r_grid[y][x + 1] == r_solved[y][x]:
                     result += 1
 
-    print(result)
+    return result
 
 def reconstruct_path(node):
     res = []
+    moves = 0
     while node.parent != None:
         res.insert(0, node.grid)
         node = node.parent
-    return res
+        moves += 1
+    return res, moves
 
 def h(child, solved):
     return manhattan(child, solved) + out_of_place(child, solved)
 
 def solve(data, solved):
+    tot_number_of_states = 0
     start = Node(None, data)
     open_l = []
     closed = []
@@ -217,11 +220,14 @@ def solve(data, solved):
     heappush(open_l, start)
     while open_l:
         current = heappop(open_l)
+        tot_number_of_states += 1
         closed.append(current)
         closedMap_set.add(current)
         
         if current.grid == solved:
-            path = reconstruct_path(current)
+            path, moves = reconstruct_path(current)
+            print('the complexity in time is {}'.format(tot_number_of_states))
+            print('number of moves is {}'.format(moves))
             return path
         
         for child in getChild(current.grid):
@@ -246,8 +252,6 @@ def solve(data, solved):
 
             heappush(open_l, child_node)
             openMap_set.update({child_node.__hash__:child_node})
-
-    print('No Solution')
                 
 import collections
 
@@ -336,11 +340,12 @@ def create_solved(N):
 
     return puzzle
 
-
+puzzle = solve(data, solved)
 
 printer(data)
-print('\n')
-printer(solved)
+print('------------------')
 
+for p in puzzle:
+    printer(p)
+    print('\n')
 
-linear_conflict(data, solved)
