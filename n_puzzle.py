@@ -1,6 +1,22 @@
 import sys
 from heapq import heappop, heappush, heapify
 import math
+from docopt import docopt
+
+help = """Le nom de mon programme trop cool
+ 
+Usage:
+  n_puzzle.py <argument_positionel> [<argument_positionel_optionel>] [--flag-optionel]
+ 
+Options:
+  -h --help          C'est généré automatiquement.
+  -m                 manhattan heuristic.
+  -o                 out of place heuritic.
+  -l                 linear conflit heuristic.
+  -u                 uniform cost heuristic.
+  -g                 greedy search heuristic.
+ 
+"""
 
 with open(sys.argv[1]) as f:
     data = f.readlines()
@@ -218,16 +234,19 @@ def solve(data, solved):
     closedMap_set = set(closed)
     openMap_set = {start.__hash__: start}
     heappush(open_l, start)
+    max_size = 1
     while open_l:
+        max_size = max(max_size, len(open_l))
         current = heappop(open_l)
         tot_number_of_states += 1
         closed.append(current)
         closedMap_set.add(current)
-        
+
         if current.grid == solved:
             path, moves = reconstruct_path(current)
             print('the complexity in time is {}'.format(tot_number_of_states))
             print('number of moves is {}'.format(moves))
+            print('the complexity in size is {}'.format(max_size))
             return path
         
         for child in getChild(current.grid):
@@ -340,12 +359,14 @@ def create_solved(N):
 
     return puzzle
 
-puzzle = solve(data, solved)
+if __name__ == '__main__':
+    arguments = docopt(help)
+    print(arguments)
+    puzzle = solve(data, solved)
 
-printer(data)
-print('------------------')
+    printer(data)
+    print('------------------')
 
-for p in puzzle:
-    printer(p)
-    print('\n')
-
+    for p in puzzle:
+        printer(p)
+        print('\n')
