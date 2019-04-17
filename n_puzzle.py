@@ -158,18 +158,45 @@ def out_of_place(grid, solved):
                 result += 1 
     return result
 
-def linear_conflict(dictOfGrid, dictOfGridData):
-    solved_grid = {}
-    data_grid = {}
+def rotate(grid, solved):
+    r_grid = []
+    for _ , v in enumerate(grid):
+        r_grids = []
+        for _ , value in enumerate(v):
+            r_grids.append(value)
+        r_grid.append(r_grids)
+    r_grid = list(zip(*r_grid))
+    r_solved = []
+    for _ , v in enumerate(solved):
+        r_solveds = []
+        for _ , value in enumerate(v):
+            r_solveds.append(value)
+        r_solved.append(r_solveds)
+    r_solved = list(zip(*r_solved))
+    return r_grid, r_solved
+    
 
-    for k, v in dictOfGridData.items():
-        data_grid.update({k: (v // N, v % N)})
+def linear_conflict(grid, solved):
+    result = 0
+    for y, v in enumerate(grid):
+        for x, _ in enumerate(v):
+            if x + 1 == len(grid):
+                break
+            if grid[y][x] in solved[y] and grid[y][x + 1] in solved[y]:
+                if grid[y][x] == solved[y][x + 1] or grid[y][x + 1] == solved[y][x]:
+                    result += 1
     
-    for k, v in dictOfGrid.items():
-       solved_grid.update({k: (v // N, v % N)})
-    
-    print(solved_grid)
-    print(data_grid)
+    r_grid , r_solved = rotate(grid, solved)
+
+    for y, v in enumerate(r_grid):
+        for x, _ in enumerate(v):
+            if x + 1 == len(r_grid):
+                break
+            if r_grid[y][x] in r_solved[y] and r_grid[y][x + 1] in r_solved[y]:
+                if r_grid[y][x] == r_solved[y][x + 1] or r_grid[y][x + 1] == r_solved[y][x]:
+                    result += 1
+
+    print(result)
 
 def reconstruct_path(node):
     res = []
@@ -222,19 +249,6 @@ def solve(data, solved):
 
     print('No Solution')
                 
-#puzzle = solve(data, solved)
-
-#print('la piece a resoudre')
-#printer(data)
-
-#print('---------')
-
-#for n in puzzle:
-#    printer(n)
-#    print('\n')
-
-#print('la piece ci dessus est la piece resolu l\'aziz')
-
 import collections
 
 def is_solvable(N, data, dictOfGrid):
@@ -322,12 +336,11 @@ def create_solved(N):
 
     return puzzle
 
-#so = create_solved(int(N))
-#print(so)
-#p = solve(data,so)
+
 
 printer(data)
 print('\n')
 printer(solved)
 
-linear_conflict(dictOfGrid, dictOfGridData)
+
+linear_conflict(data, solved)
