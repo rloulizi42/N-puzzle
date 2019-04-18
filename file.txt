@@ -1,5 +1,5 @@
-#My own generator
+# This puzzle is solvable
 3
-6 0 7
-5 8 2
-3 4 1
+0 7 4
+8 5 1
+2 3 6

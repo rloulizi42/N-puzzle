@@ -15,7 +15,6 @@ Options:
   -l                 linear conflit heuristic.
   -u                 uniform cost heuristic.
   -g                 greedy search heuristic.
- 
 """
 
 def create_solved(N):
@@ -27,7 +26,7 @@ def create_solved(N):
     puzzle = []
     for i in range(0, N):
         puzzle.append([])
-        for j in range(0, N):
+        for _ in range(0, N):
             puzzle[i].append(0)
     while it < number:
         while x + hd < N and it < number:
@@ -284,9 +283,6 @@ def is_solvable(N, data, dictfGrid):
             return True
     return False    
 
-
-#d = solve(data, solved)
-
 def create_solved(N):
     it = 1
     number = N * N 
@@ -376,9 +372,6 @@ if __name__ == '__main__':
         print('unsolvable')
         sys.exit(0)
 
-    printer(data)
-    print('------------------')
+    from tkinter import *
 
-    for p in puzzle:
-        printer(p)
-        print('\n')
+    root = Tk()

@@ -6,6 +6,7 @@ from random import shuffle
 help = """
 Usage:
   my_gen.py <Number>
+
 """
 arguments = docopt(help)
 
