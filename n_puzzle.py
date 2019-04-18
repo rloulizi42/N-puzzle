@@ -333,7 +333,7 @@ def create_solved(N):
 if __name__ == '__main__':
     arguments = docopt(help)
 
-    if arguments['<argument_positionel_optionel>'] not in ['m', 'o', 'l', 'u', 'g']:
+    if arguments['<argument_positionel_optionel>'] not in ['m', 'o', 'l', 'u', 'g'] and arguments['<argument_positionel_optionel>']:
         print(help)
         sys.exit(0)
     with open(sys.argv[1]) as f:
