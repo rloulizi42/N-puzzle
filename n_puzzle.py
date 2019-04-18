@@ -2,14 +2,14 @@ import sys
 from heapq import heappop, heappush, heapify
 import math
 from docopt import docopt
+import collections
 
-help = """Le nom de mon programme trop cool
- 
+help = """
 Usage:
   n_puzzle.py <argument_positionel> [<argument_positionel_optionel>] [--flag-optionel]
  
 Options:
-  -h --help          C'est généré automatiquement.
+  -h --help          affiche help.
   -m                 manhattan heuristic.
   -o                 out of place heuritic.
   -l                 linear conflit heuristic.
@@ -17,29 +17,6 @@ Options:
   -g                 greedy search heuristic.
  
 """
-
-with open(sys.argv[1]) as f:
-    data = f.readlines()
-data = [x.strip() for x in data]
-N = int(data[1])
-data = [list(x.split(" ")) for x in data[2:]]
-
-new_data = []
-
-for lignes in data:
-    l = []
-    for x in lignes:
-        if x.isdigit():
-            l.append(x)
-    new_data.append(l)
-
-data = new_data
-data = [list(map(int, x)) for x in data]
-
-DOWN = (-1, 0)
-UP = (1, 0)
-LEFT = (0, 1)
-RIGHT = (0, -1)
 
 def create_solved(N):
     it = 1
@@ -81,18 +58,7 @@ def create_solved(N):
         bg += 1
         y += 1
         x += 1
-
     return puzzle
-
-solved = create_solved(int(N))
-
-flat_solved = [n for lists in solved for n in lists]
-dictOfGrid = {flat_solved[i] : i for i in range(0,len(flat_solved))}
-
-flat_data = [n for lists in data for n in lists]
-dictOfGridData = {flat_data[i] : i for i in range(0,len(flat_data))}
-
-n = math.sqrt(len(flat_solved))
 
 def printer(grid):
     for line in grid:
@@ -123,7 +89,6 @@ def getChild(grid):
         if child != grid:
             childs.append(child)
     return childs
-
 
 class Node():
     def __init__(self, parent=None, grid=None, f=0):
@@ -211,7 +176,6 @@ def linear_conflict(grid, solved):
             if r_grid[y][x] in r_solved[y] and r_grid[y][x + 1] in r_solved[y]:
                 if r_grid[y][x] == r_solved[y][x + 1] or r_grid[y][x + 1] == r_solved[y][x]:
                     result += 1
-
     return result
 
 def reconstruct_path(node):
@@ -223,10 +187,19 @@ def reconstruct_path(node):
         moves += 1
     return res, moves
 
-def h(child, solved):
-    return manhattan(child, solved) + out_of_place(child, solved)
+def h(child, solved, heuristic):
+    if heuristic == 'm' or heuristic is None:
+        return manhattan(child, solved)
+    if heuristic == 'o':
+        return manhattan(child, solved) + out_of_place(child, solved)
+    if heuristic == 'l':
+        return manhattan(child, solved) + linear_conflict(child, solved)
+    if heuristic == 'u':
+        return manhattan(child, solved)
+    if heuristic == 'g':
+        return manhattan(child, solved)
 
-def solve(data, solved):
+def solve(data, solved, heuristic):
     tot_number_of_states = 0
     start = Node(None, data)
     open_l = []
@@ -256,7 +229,7 @@ def solve(data, solved):
                 continue
     
             child_node.g = current.g + 1
-            child_node.h = h(child, solved)
+            child_node.h = h(child, solved, heuristic)
             child_node.f = child_node.g + child_node.h
 
             if child_node in openMap_set.values():
@@ -272,9 +245,7 @@ def solve(data, solved):
             heappush(open_l, child_node)
             openMap_set.update({child_node.__hash__:child_node})
                 
-import collections
-
-def is_solvable(N, data, dictOfGrid):
+def is_solvable(N, data, dictfGrid):
     solved_grid = {}
     data_grid = {}
     data_grid2 = {}
@@ -361,8 +332,49 @@ def create_solved(N):
 
 if __name__ == '__main__':
     arguments = docopt(help)
-    print(arguments)
-    puzzle = solve(data, solved)
+
+    if arguments['<argument_positionel_optionel>'] not in ['m', 'o', 'l', 'u', 'g']:
+        print(help)
+        sys.exit(0)
+    with open(sys.argv[1]) as f:
+        data = f.readlines()
+   
+    data = [x.strip() for x in data]
+    N = int(data[1])
+    data = [list(x.split(" ")) for x in data[2:]]
+
+    new_data = []
+
+    for lignes in data:
+        l = []
+        for x in lignes:
+            if x.isdigit():
+                l.append(x)
+        new_data.append(l)
+
+    data = new_data
+    data = [list(map(int, x)) for x in data]
+
+    DOWN = (-1, 0)
+    UP = (1, 0)
+    LEFT = (0, 1)
+    RIGHT = (0, -1)
+    
+    solved = create_solved(int(N))
+
+    flat_solved = [n for lists in solved for n in lists]
+    dictOfGrid = {flat_solved[i] : i for i in range(0,len(flat_solved))}
+
+    flat_data = [n for lists in data for n in lists]
+    dictOfGridData = {flat_data[i] : i for i in range(0,len(flat_data))}
+
+    n = math.sqrt(len(flat_solved))
+
+    if is_solvable(N, data, dictOfGrid):
+        puzzle = solve(data, solved, arguments['<argument_positionel_optionel>'])
+    else:
+        print('unsolvable')
+        sys.exit(0)
 
     printer(data)
     print('------------------')
