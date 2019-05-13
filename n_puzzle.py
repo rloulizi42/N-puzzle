@@ -3,6 +3,7 @@ from heapq import heappop, heappush, heapify
 import math
 from docopt import docopt
 import collections
+from tkinter import * 
 
 help = """
 Usage:
@@ -15,6 +16,7 @@ Options:
   -l                 linear conflit heuristic.
   -u                 uniform cost heuristic.
   -g                 greedy search heuristic.
+  -v                 graphic puzzle solver.
 """
 
 def create_solved(N):
@@ -197,6 +199,7 @@ def h(child, solved, heuristic):
         return manhattan(child, solved)
     if heuristic == 'g':
         return manhattan(child, solved)
+    return manhattan(child, solved)
 
 def solve(data, solved, heuristic):
     tot_number_of_states = 0
@@ -325,11 +328,12 @@ def create_solved(N):
         x += 1
 
     return puzzle
+  
 
 if __name__ == '__main__':
     arguments = docopt(help)
 
-    if arguments['<argument_positionel_optionel>'] not in ['m', 'o', 'l', 'u', 'g'] and arguments['<argument_positionel_optionel>']:
+    if arguments['<argument_positionel_optionel>'] not in ['m', 'o', 'l', 'u', 'g', 'v'] and arguments['<argument_positionel_optionel>']:
         print(help)
         sys.exit(0)
     with open(sys.argv[1]) as f:
@@ -372,6 +376,28 @@ if __name__ == '__main__':
         print('unsolvable')
         sys.exit(0)
 
-    from tkinter import *
+    print(data)
+    print('\n')
 
-    root = Tk()
+    for p in puzzle:
+        printer(p)
+        print('\n')
+
+    if arguments['<argument_positionel_optionel>'] is not None and 'v' in arguments['<argument_positionel_optionel>']:
+       root = Tk()
+
+       def callback():
+           root.destroy()
+           exit()
+       root.protocol("WM_DELETE_WINDOW", callback)
+
+       for i, p in enumerate(puzzle):
+           max_p = (len(p)**2) - 1
+           if root:
+               for j, row in enumerate(p):
+                   for k, column in enumerate(row):
+                       L = Label(root,text=(' ' if (max_p // 10 > 0 and column // 10 == 0) else '') + str(column) + ' ', font=("times", 200), fg="red" if column == 0 else "black")
+                       L.grid(row=j,column=k)
+               input()
+
+       root.mainloop()
